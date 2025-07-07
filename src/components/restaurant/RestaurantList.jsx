@@ -1,9 +1,10 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, MapPin, ExternalLink } from "lucide-react";
+import { Star, MapPin, ExternalLink, Navigation } from "lucide-react";
 
 export default function RestaurantList({ restaurants }) {
   const getCuisineColor = (cuisine) => {
@@ -88,6 +89,12 @@ export default function RestaurantList({ restaurants }) {
                           <Badge variant="outline" className="text-gray-600">
                             {getPriceLevel(restaurant.price_level)}
                           </Badge>
+                          {restaurant.distance && (
+                            <Badge variant="secondary" className="bg-gray-100 text-gray-800 flex items-center gap-1">
+                              <Navigation className="w-3 h-3"/>
+                              {restaurant.distance.toFixed(1)} km
+                            </Badge>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">

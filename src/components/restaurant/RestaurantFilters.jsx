@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,18 +34,27 @@ export default function RestaurantFilters({ restaurants, filters, onFiltersChang
     });
   };
 
+  const handleDistanceChange = (value) => {
+    onFiltersChange({
+      ...filters,
+      maxDistance: value[0]
+    });
+  };
+
   const clearFilters = () => {
     onFiltersChange({
       excludedCuisines: [],
       minRating: 0,
-      maxPriceLevel: 4
+      maxPriceLevel: 4,
+      maxDistance: 3 // Default distance added
     });
   };
 
   const activeFiltersCount = 
     filters.excludedCuisines.length + 
     (filters.minRating > 0 ? 1 : 0) + 
-    (filters.maxPriceLevel < 4 ? 1 : 0);
+    (filters.maxPriceLevel < 4 ? 1 : 0) +
+    (filters.maxDistance < 10 && filters.maxDistance !== 3 ? 1 : 0); // Distance filter count logic
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm">
@@ -132,6 +142,25 @@ export default function RestaurantFilters({ restaurants, filters, onFiltersChang
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>$</span>
             <span>$$$$</span>
+          </div>
+        </div>
+
+        {/* Max Distance */}
+        <div>
+          <h3 className="font-semibold mb-3">
+            Distance: {filters.maxDistance} km
+          </h3>
+          <Slider
+            value={[filters.maxDistance]}
+            onValueChange={handleDistanceChange}
+            max={10}
+            min={1}
+            step={1}
+            className="w-full"
+          />
+          <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <span>1 km</span>
+            <span>10 km</span>
           </div>
         </div>
       </CardContent>

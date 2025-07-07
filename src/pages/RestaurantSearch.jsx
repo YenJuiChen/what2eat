@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,20 @@ import { Button } from "@/components/ui/button";
 import { Loader2, MapPin, Shuffle, ArrowLeft } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+const getDistance = (lat1, lon1, lat2, lon2) => {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
+  const R = 6371; // Radius of the earth in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Distance in km
+  return distance;
+};
+
 export default function RestaurantSearch() {
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState([]);
@@ -20,7 +35,8 @@ export default function RestaurantSearch() {
   const [filters, setFilters] = useState({
     excludedCuisines: [],
     minRating: 0,
-    maxPriceLevel: 4
+    maxPriceLevel: 4,
+    maxDistance: 3 // Default distance in km
   });
   const [mealData, setMealData] = useState(null);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -41,14 +57,14 @@ export default function RestaurantSearch() {
 
   useEffect(() => {
     applyFilters();
-  }, [restaurants, filters]);
+  }, [restaurants, filters, mealData]); // Add mealData to dependency array for applyFilters
 
   const loadRestaurants = async (mealData) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const prompt = `Find restaurants near coordinates ${mealData.location.lat}, ${mealData.location.lng} within 3km radius that are suitable for ${mealData.mealName}. 
+      const prompt = `Find restaurants near coordinates ${mealData.location.lat}, ${mealData.location.lng} within a 10km radius that are suitable for ${mealData.mealName}. 
       
       Please provide realistic restaurant data including:
       - Restaurant name
@@ -118,12 +134,18 @@ export default function RestaurantSearch() {
   };
 
   const applyFilters = () => {
-    let filtered = restaurants.filter(restaurant => {
+    if (!mealData) return; // Ensure mealData is available for distance calculation
+
+    let filtered = restaurants.map(r => ({
+      ...r,
+      distance: getDistance(mealData.location.lat, mealData.location.lng, r.latitude, r.longitude)
+    })).filter(restaurant => {
       const ratingMatch = restaurant.rating >= filters.minRating;
       const priceMatch = restaurant.price_level <= filters.maxPriceLevel;
       const cuisineMatch = !filters.excludedCuisines.includes(restaurant.cuisine_type);
+      const distanceMatch = restaurant.distance <= filters.maxDistance;
       
-      return ratingMatch && priceMatch && cuisineMatch;
+      return ratingMatch && priceMatch && cuisineMatch && distanceMatch;
     });
     
     setFilteredRestaurants(filtered);
@@ -226,6 +248,7 @@ export default function RestaurantSearch() {
           restaurants={restaurants}
           filters={filters}
           onFiltersChange={setFilters}
+          mealData={mealData} // Pass mealData to filters component
         />
 
         {/* Spin Button */}
