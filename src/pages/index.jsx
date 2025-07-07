@@ -1,24 +1,32 @@
 import Layout from "./Layout.jsx";
 
-import MealPicker from "./MealPicker";
+import Home from "./Home";
 
-import RestaurantSearch from "./RestaurantSearch";
+import RestaurantList from "./RestaurantList";
 
-import RestaurantResult from "./RestaurantResult";
+import RestaurantDetail from "./RestaurantDetail";
 
 import History from "./History";
+
+import Favorites from "./Favorites";
+
+import Settings from "./Settings";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
     
-    MealPicker: MealPicker,
+    Home: Home,
     
-    RestaurantSearch: RestaurantSearch,
+    RestaurantList: RestaurantList,
     
-    RestaurantResult: RestaurantResult,
+    RestaurantDetail: RestaurantDetail,
     
     History: History,
+    
+    Favorites: Favorites,
+    
+    Settings: Settings,
     
 }
 
@@ -44,16 +52,20 @@ function PagesContent() {
         <Layout currentPageName={currentPage}>
             <Routes>            
                 
-                    <Route path="/" element={<MealPicker />} />
+                    <Route path="/" element={<Home />} />
                 
                 
-                <Route path="/MealPicker" element={<MealPicker />} />
+                <Route path="/Home" element={<Home />} />
                 
-                <Route path="/RestaurantSearch" element={<RestaurantSearch />} />
+                <Route path="/RestaurantList" element={<RestaurantList />} />
                 
-                <Route path="/RestaurantResult" element={<RestaurantResult />} />
+                <Route path="/RestaurantDetail" element={<RestaurantDetail />} />
                 
                 <Route path="/History" element={<History />} />
+                
+                <Route path="/Favorites" element={<Favorites />} />
+                
+                <Route path="/Settings" element={<Settings />} />
                 
             </Routes>
         </Layout>

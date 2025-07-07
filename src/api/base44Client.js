@@ -3,6 +3,6 @@ import { createClient } from '@base44/sdk';
 
 // Create a client with authentication required
 export const base44 = createClient({
-  appId: "686b5d704db6071ef37c80c2", 
+  appId: "686b9c4395291d47ac10056d", 
   requiresAuth: true // Ensure authentication is required for all operations
 });
